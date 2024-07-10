@@ -27,7 +27,7 @@ class FilmControllerTests {
         film.setDescription("Про врага Бэтмена");
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
-        assertThrows(ConditionsNotMetException.class,()->{
+        assertThrows(ConditionsNotMetException.class,() -> {
             Film film1 = filmController.update(film);
         });
     }
