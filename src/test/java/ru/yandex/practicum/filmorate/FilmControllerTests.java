@@ -27,10 +27,11 @@ class FilmControllerTests {
         film.setDescription("Про врага Бэтмена");
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
-        assertThrows(ConditionsNotMetException.class,() -> {
+        assertThrows(ConditionsNotMetException.class, () -> {
             Film film1 = filmController.update(film);
         });
     }
+
     @Test
     @DisplayName("Проверяем валидацию на пустое название фильма")
     void shouldValidationForEmptyNameForFilm() {
@@ -39,10 +40,11 @@ class FilmControllerTests {
         film.setDescription("Про врага Бэтмена");
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
-        assertThrows(ValidationException.class,()->{
+        assertThrows(ValidationException.class, () -> {
             Film film1 = filmController.create(film);
         });
     }
+
     @Test
     @DisplayName("Проверяем валидацию на максимальную длину описания фильма")
     void shouldValidationForMaximumLengthForFilmDescription() {
@@ -54,10 +56,11 @@ class FilmControllerTests {
                 "Про врага Бэтмена Про врага Бэтмена Про врага Бэтмена Про врага Бэтмена Про врага Бэтмена");
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
-        assertThrows(ValidationException.class,()->{
+        assertThrows(ValidationException.class, () -> {
             Film film1 = filmController.create(film);
         });
     }
+
     @Test
     @DisplayName("Проверяем валидацию дату релиза фильма")
     void shouldValidationOfTheFilmsReleaseDate() {
@@ -65,11 +68,12 @@ class FilmControllerTests {
         film.setName("Джокер");
         film.setDescription("Про врага Бэтмена");
         film.setDuration(120);
-        film.setReleaseDate(LocalDate.of(1880,12,12));
-        assertThrows(ValidationException.class,()->{
+        film.setReleaseDate(LocalDate.of(1880, 12, 12));
+        assertThrows(ValidationException.class, () -> {
             Film film1 = filmController.create(film);
         });
     }
+
     @Test
     @DisplayName("Проверяем валидацию продолжительности фильма")
     void shouldValidationDurationFilm() {
@@ -78,7 +82,7 @@ class FilmControllerTests {
         film.setDescription("Про врага Бэтмена");
         film.setDuration(-120);
         film.setReleaseDate(LocalDate.now());
-        assertThrows(ValidationException.class,()->{
+        assertThrows(ValidationException.class, () -> {
             Film film1 = filmController.create(film);
         });
     }
