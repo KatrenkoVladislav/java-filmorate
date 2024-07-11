@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class UserControllerTests {
         user.setName("Vlad");
         user.setBirthday(LocalDate.of(1993, 4, 24));
         user.setLogin("Botan");
-        user.setEmail("adigeymail.ru");
+        user.setEmail("");
 
         assertThrows(ValidationException.class, () -> {
             User user1 = userController.create(user);
@@ -41,7 +42,7 @@ public class UserControllerTests {
         user.setLogin("");
         user.setEmail("adigey@mail.ru");
 
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(ConstraintViolationException.class, () -> {
             User user1 = userController.create(user);
         });
     }
@@ -50,7 +51,7 @@ public class UserControllerTests {
     @DisplayName("Проверяем дату рождения в будущем")
     void shouldValidationBirthdayFuture() {
         User user = new User();
-        user.setName("Vlad");
+
         user.setBirthday(LocalDate.of(2025, 4, 24));
         user.setLogin("Botan");
         user.setEmail("adigey@mail.ru");
@@ -70,5 +71,19 @@ public class UserControllerTests {
         User user1 = userController.create(user);
 
         assertEquals("Botan", user1.getName());
+    }
+
+    @Test
+    @DisplayName("Проверяем правильное написание почты")
+    void shouldValidationEmail() {
+        User user = new User();
+        user.setName("Vlad");
+        user.setBirthday(LocalDate.of(1993, 4, 24));
+        user.setLogin("Botan");
+        user.setEmail("adigeymail.ru@");
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            User user1 = userController.create(user);
+        });
     }
 }

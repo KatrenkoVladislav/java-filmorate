@@ -16,36 +16,35 @@ import java.util.Map;
 @Slf4j
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
+    private long id = 0;
 
     @GetMapping
     public Collection<Film> getAll() {
-        log.info("Все фильмы");
+        log.info("Отправлен ответ Get /films c телом {}", films.values());
         return films.values();
     }
 
     @PostMapping
     public Film create(@RequestBody Film film) {
+        log.info("Пришел Post запрос /films с телом {}", film);
         validateFilm(film);
         film.setId(getNextId());
         films.put(film.getId(), film);
-        log.info("Фильм добавлен");
+        log.info("Отправлен ответ Post / films с телом {}", film);
         return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film film) {
         if (film.getId() == null || !films.containsKey(film.getId())) {
-            log.info("Фильм с id " + film.getId() + " не найден!");
-            throw new ConditionsNotMetException("id не найдено");
+            log.info("Фильм с id {} не найден!", film.getId());
+            throw new ConditionsNotMetException("не верно указан id=" + film.getId());
         }
+        log.info("Пришел Put запрос /films с телом {}", film);
         validateFilm(film);
-        Film oldFilm = films.get(film.getId());
-        oldFilm.setDescription(film.getDescription());
-        oldFilm.setName(film.getName());
-        oldFilm.setDuration(film.getDuration());
-        oldFilm.setReleaseDate(film.getReleaseDate());
-        log.info("Фильм обновлен");
-        return oldFilm;
+        films.put(film.getId(), film);
+        log.info("Отправлен ответ Put / films с телом {}", film);
+        return film;
     }
 
     private void validateFilm(Film film) {
@@ -69,11 +68,6 @@ public class FilmController {
     }
 
     private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++id;
     }
 }
