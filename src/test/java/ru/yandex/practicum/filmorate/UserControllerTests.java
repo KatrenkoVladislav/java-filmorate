@@ -42,7 +42,7 @@ public class UserControllerTests {
         user.setLogin("");
         user.setEmail("adigey@mail.ru");
 
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(ConstraintViolationException.class, () -> {
             User user1 = userController.create(user);
         });
     }
