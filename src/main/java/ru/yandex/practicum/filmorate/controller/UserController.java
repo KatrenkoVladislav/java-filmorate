@@ -18,7 +18,6 @@ import java.util.Map;
 @Slf4j
 @Validated
 public class UserController {
-
     private final Map<Long, User> users = new HashMap<>();
     private long id = 0;
 
@@ -31,23 +30,23 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         validateUser(user);
-        log.info("Пришел Post запрос /users с телом {}",user);
+        log.info("Пришел Post запрос /users с телом {}", user);
         user.setId(getNextId());
         users.put(user.getId(), user);
-        log.info("Отправлен ответ Post /users с телом {}",user);
+        log.info("Отправлен ответ Post /users с телом {}", user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         if (user.getId() == null || !users.containsKey(user.getId())) {
-            log.info("Фильм с id {} не найден!",user.getId());
+            log.info("Фильм с id {} не найден!", user.getId());
             throw new ConditionsNotMetException("id не найдено");
         }
         validateUser(user);
-        log.info("Пришел Put запрос /users с телом {}",user);
+        log.info("Пришел Put запрос /users с телом {}", user);
         users.put(user.getId(), user);
-        log.info("Отправлен ответ Put /users с телом {}",user);
+        log.info("Отправлен ответ Put /users с телом {}", user);
         return user;
     }
 

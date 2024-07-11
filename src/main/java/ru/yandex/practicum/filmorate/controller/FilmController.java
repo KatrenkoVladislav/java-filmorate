@@ -17,6 +17,7 @@ import java.util.Map;
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
     private long id = 0;
+
     @GetMapping
     public Collection<Film> getAll() {
         log.info("Все фильмы");
@@ -25,24 +26,24 @@ public class FilmController {
 
     @PostMapping
     public Film create(@RequestBody Film film) {
-        log.info("Пришел Post запрос /films с телом {}",film);
+        log.info("Пришел Post запрос /films с телом {}", film);
         validateFilm(film);
         film.setId(getNextId());
         films.put(film.getId(), film);
-        log.info("Отправлен ответ Post / films с телом {}",film);
+        log.info("Отправлен ответ Post / films с телом {}", film);
         return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film film) {
         if (film.getId() == null || !films.containsKey(film.getId())) {
-            log.info("Фильм с id {} не найден!",film.getId());
+            log.info("Фильм с id {} не найден!", film.getId());
             throw new ConditionsNotMetException("id не найдено");
         }
         validateFilm(film);
-        log.info("Пришел Put запрос /films с телом {}",film);
+        log.info("Пришел Put запрос /films с телом {}", film);
         films.put(film.getId(), film);
-        log.info("Отправлен ответ Put / films с телом {}",film);
+        log.info("Отправлен ответ Put / films с телом {}", film);
         return film;
     }
 
