@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exeption.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
@@ -14,8 +16,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@Validated
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
+    private long id = 0;
 
     @GetMapping
     public Collection<User> getAll() {
@@ -24,28 +28,26 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         validateUser(user);
+        log.info("Пришел Post запрос /users с телом {}",user);
         user.setId(getNextId());
         users.put(user.getId(), user);
-        log.info("Пользователь создан");
+        log.info("Отправлен ответ Post /users с телом {}",user);
         return user;
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         if (user.getId() == null || !users.containsKey(user.getId())) {
-            log.info("Фильм с id" + user.getId() + "не найден!");
+            log.info("Фильм с id {} не найден!",user.getId());
             throw new ConditionsNotMetException("id не найдено");
         }
         validateUser(user);
-        User oldUser = users.get(user.getId());
-        oldUser.setEmail(user.getEmail());
-        oldUser.setLogin(user.getLogin());
-        oldUser.setBirthday(user.getBirthday());
-        oldUser.setName(user.getName());
-        log.info("Пользователь обновлен");
-        return oldUser;
+        log.info("Пришел Put запрос /users с телом {}",user);
+        users.put(user.getId(), user);
+        log.info("Отправлен ответ Put /users с телом {}",user);
+        return user;
     }
 
     private void validateUser(User user) {
@@ -67,11 +69,6 @@ public class UserController {
     }
 
     private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++id;
     }
 }
