@@ -20,7 +20,7 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> getAll() {
-        log.info("Все фильмы");
+        log.info("Отправлен ответ Get /films c телом {}", films.values());
         return films.values();
     }
 
@@ -38,10 +38,10 @@ public class FilmController {
     public Film update(@RequestBody Film film) {
         if (film.getId() == null || !films.containsKey(film.getId())) {
             log.info("Фильм с id {} не найден!", film.getId());
-            throw new ConditionsNotMetException("id не найдено");
+            throw new ConditionsNotMetException("не верно указан id=" + film.getId());
         }
-        validateFilm(film);
         log.info("Пришел Put запрос /films с телом {}", film);
+        validateFilm(film);
         films.put(film.getId(), film);
         log.info("Отправлен ответ Put / films с телом {}", film);
         return film;

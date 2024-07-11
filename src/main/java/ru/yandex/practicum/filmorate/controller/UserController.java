@@ -23,7 +23,7 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getAll() {
-        log.info("Все пользователи");
+        log.info("Отправлен ответ Get /films c телом {}", users.values());
         return users.values();
     }
 
@@ -43,8 +43,8 @@ public class UserController {
             log.info("Фильм с id {} не найден!", user.getId());
             throw new ConditionsNotMetException("id не найдено");
         }
-        validateUser(user);
         log.info("Пришел Put запрос /users с телом {}", user);
+        validateUser(user);
         users.put(user.getId(), user);
         log.info("Отправлен ответ Put /users с телом {}", user);
         return user;
