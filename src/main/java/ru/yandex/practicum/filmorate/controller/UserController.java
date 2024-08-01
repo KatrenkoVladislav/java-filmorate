@@ -26,42 +26,59 @@ public class UserController {
 
     @PutMapping("{userId}/friends/{friendId}")
     public void addToFriend(@Valid @PathVariable Long userId, @PathVariable Long friendId) {
+        log.info("Пришел Put запрос с переменной пути /users/{}/friends/{}", userId, friendId);
         userService.addToFriend(userId, friendId);
     }
 
     @DeleteMapping("{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        log.info("Пришел Delete запрос с переменной пути /users/{}/friends/{}", userId, friendId);
         userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("{userId}/friends")
     public List<User> allUserFriends(@PathVariable Long userId) {
-        return userService.allUserFriends(userId);
+        log.info("Пришел Get запрос с переменной пути /users/{}/friends", userId);
+        List<User> userFriendsResponse = userService.allUserFriends(userId);
+        log.info("Отправлен Get ответ с телом {}", userFriendsResponse);
+        return userFriendsResponse;
     }
 
     @GetMapping("{userId}/friends/common/{otherUserId}")
     public List<User> commonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
-        return userService.commonFriends(userId, otherUserId);
+        log.info("Пришел Get запрос с переменной пути /users/{}/friends/common/{}", userId, otherUserId);
+        List<User> userCommonFriendsResponse = userService.commonFriends(userId, otherUserId);
+        log.info("Отправлен Get ответ с телом {}", userCommonFriendsResponse);
+        return userCommonFriendsResponse;
     }
 
     @PostMapping
     public User userCreate(@Valid @RequestBody User newUser) {
-        return userService.userCreate(newUser);
+        log.info("Пришел Post запрос /films с телом {}", newUser);
+        User userResponse = userService.userCreate(newUser);
+        log.info("Отправлен ответ Post / films с телом {}", userResponse);
+        return userResponse;
     }
 
     @PutMapping
     public User userUpdate(@Valid @RequestBody User newUser) {
-        return userService.userUpdate(newUser);
+        log.info("Пришел Put запрос /films с телом {}", newUser);
+        User userResponse = userService.userUpdate(newUser);
+        log.info("Отправлен Put ответ /films с телом {}", userResponse);
+        return userResponse;
     }
 
     @GetMapping
     public Collection<User> allUsers() {
-        return userService.allUsers();
+        Collection<User> usersResponse = userService.allUsers();
+        log.info("Отправлен ответ Get /films c телом {}", usersResponse);
+        return usersResponse;
     }
 
     @DeleteMapping(value = {"{userId}"})
     @ResponseStatus(HttpStatus.OK)
     public void userDelete(@PathVariable("userId") Long id) {
+        log.info("Пришел Delete запрос с переменной пути /users/{}", id);
         userService.userDelete(id);
     }
 }

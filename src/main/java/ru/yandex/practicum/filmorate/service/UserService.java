@@ -7,10 +7,11 @@ import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -19,6 +20,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     public User userCreate(User newUser) {
+        validateUser(newUser);
         return userStorage.userCreate(newUser);
     }
 
@@ -27,6 +29,7 @@ public class UserService {
     }
 
     public User userUpdate(User newUser) {
+        validateUser(newUser);
         return userStorage.userUpdate(newUser);
     }
 
@@ -35,31 +38,30 @@ public class UserService {
     }
 
     public void addToFriend(Long userId, Long otherUserId) {
+        userStorage.checkId(userId);
+        userStorage.checkId(otherUserId);
         User user = userStorage.getUser(userId);
         User otherUser = userStorage.getUser(otherUserId);
-        if (userStorage.getFriends().get(user.getId()).contains(otherUser)) {
-            log.error("Ошибка при добавлении друга: Пользователи {} и {} уже являются друзьями.", userId, otherUserId);
-            throw new ValidationException("Пользователи уже в друзьях");
-        }
-        userStorage.getFriends().get(user.getId()).add(userStorage.getUser(otherUserId));
-        userStorage.getFriends().get(otherUser.getId()).add(userStorage.getUser(userId));
+        user.getFriendId().add(otherUserId);
+        otherUser.getFriendId().add(userId);
         log.info("Пользователь {} добавил в друзья пользователя {}", userId, otherUserId);
     }
 
     public void deleteFriend(Long userId, Long friendId) {
+        userStorage.checkId(userId);
+        userStorage.checkId(friendId);
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        if (userStorage.getFriends().get(user.getId()).remove(friend) && userStorage.getFriends().get(friend.getId()).remove(user)) {
-            log.info("Пользователь {} успешно удалил пользователя {}", userId, friendId);
-        } else {
-            log.warn("Пользователь {} не имел друга с ID {}", userId, friendId);
-        }
+        user.getFriendId().remove(friendId);
+        friend.getFriendId().remove(userId);
     }
 
     public List<User> allUserFriends(Long userId) {
-        User user = userStorage.getUser(userId);
-        Set<User> userFriendsSet = userStorage.getFriends().get(user.getId());
-        return new ArrayList<>(userFriendsSet);
+        userStorage.checkId(userId);
+        userStorage.getUser(userId);
+        return userStorage.getUser(userId).getFriendId().stream()
+                .map(userStorage::getUser)
+                .collect(Collectors.toList());
     }
 
     public List<User> commonFriends(Long userId, Long otherUserId) {
@@ -67,7 +69,24 @@ public class UserService {
         List<User> otherUserFriends = allUserFriends(otherUserId);
         List<User> commonFriends = new ArrayList<>(userFriends);
         commonFriends.retainAll(otherUserFriends);
-
         return commonFriends;
+    }
+
+    private void validateUser(User user) {
+        if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
+            log.error("Ошибка в написании почты");
+            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
+        }
+        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
+            log.error("Ошибка в написании логина");
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.error("Ошибка в дате рождения");
+            throw new ValidationException("Дата рождения не может быть в будущем");
+        }
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        }
     }
 }

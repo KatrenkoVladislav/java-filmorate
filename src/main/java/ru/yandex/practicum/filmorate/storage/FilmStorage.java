@@ -8,8 +8,6 @@ import java.util.Set;
 
 public interface FilmStorage {
 
-    Map<Long, Set<Long>> getLikes();
-
     Film filmCreate(Film film);
 
     Film filmUpdate(Film film);

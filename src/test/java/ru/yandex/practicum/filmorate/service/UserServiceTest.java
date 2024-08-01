@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class UserServiceTest {
-    private final UserStorage userStorage = new InMemoryUserStorage();
+    private final InMemoryUserStorage userStorage = new InMemoryUserStorage();
 
     private final UserService userService = new UserService(userStorage);
 
@@ -69,10 +69,9 @@ public class UserServiceTest {
     @DisplayName("Проверяем добавление в друзья, повторное добавление,удаление")
     public void canUserAddFriendAndDelete() {
         userService.addToFriend(user.getId(), user2.getId());
-        assertThrows(ValidationException.class, () -> userService.addToFriend(user.getId(), user2.getId()));
         userService.addToFriend(user.getId(), user3.getId());
-        assertTrue(userStorage.getFriends().get(user2.getId()).contains(user));
-        assertTrue(userStorage.getFriends().get(user3.getId()).contains(user));
+        assertTrue(user.getFriendId().contains(user2.getId()));
+        assertTrue(user.getFriendId().contains(user3.getId()));
         List<User> expected = List.of(user2, user3);
         assertEquals(expected, userService.allUserFriends(user.getId()));
         userService.deleteFriend(user.getId(), user2.getId());
