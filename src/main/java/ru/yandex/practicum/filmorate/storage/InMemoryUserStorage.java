@@ -23,7 +23,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User userUpdate(User user) {
-        checkId(user.getId());
         getUser(user.getId());
         users.put(user.getId(), user);
         return user;
@@ -31,7 +30,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void userDelete(Long id) {
-        checkId(id);
         getUser(id);
         users.remove(id);
         log.info("Ползователь {} удален", users.get(id));
@@ -49,14 +47,6 @@ public class InMemoryUserStorage implements UserStorage {
         }
         log.info("Пользователь {} найден", users.get(id));
         return users.get(id);
-    }
-
-    @Override
-    public void checkId(Long id) {
-        if (id == null) {
-            log.info("Параметр id не задан в запросе");
-            throw new ConditionsNotMetException("Параметр id не задан");
-        }
     }
 
     private long getNextId() {

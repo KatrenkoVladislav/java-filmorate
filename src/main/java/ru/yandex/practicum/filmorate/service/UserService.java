@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exeption.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -29,17 +30,19 @@ public class UserService {
     }
 
     public User userUpdate(User newUser) {
+        checkId(newUser.getId());
         validateUser(newUser);
         return userStorage.userUpdate(newUser);
     }
 
     public void userDelete(Long id) {
+        checkId(id);
         userStorage.userDelete(id);
     }
 
     public void addToFriend(Long userId, Long otherUserId) {
-        userStorage.checkId(userId);
-        userStorage.checkId(otherUserId);
+        checkId(userId);
+        checkId(otherUserId);
         User user = userStorage.getUser(userId);
         User otherUser = userStorage.getUser(otherUserId);
         user.getFriendId().add(otherUserId);
@@ -48,8 +51,8 @@ public class UserService {
     }
 
     public void deleteFriend(Long userId, Long friendId) {
-        userStorage.checkId(userId);
-        userStorage.checkId(friendId);
+        checkId(userId);
+        checkId(friendId);
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
         user.getFriendId().remove(friendId);
@@ -57,7 +60,7 @@ public class UserService {
     }
 
     public List<User> allUserFriends(Long userId) {
-        userStorage.checkId(userId);
+        checkId(userId);
         userStorage.getUser(userId);
         return userStorage.getUser(userId).getFriendId().stream()
                 .map(userStorage::getUser)
@@ -87,6 +90,13 @@ public class UserService {
         }
         if (user.getName() == null) {
             user.setName(user.getLogin());
+        }
+    }
+
+    private void checkId(Long id) {
+        if (id == null) {
+            log.info("Параметр id не задан в запросе");
+            throw new ConditionsNotMetException("Параметр id не задан");
         }
     }
 }

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeption.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,8 +10,7 @@ import java.util.*;
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
-    @Autowired
-    private UserStorage userStorage;
+
     private final Map<Long, Film> films = new HashMap<>();
 
     private long id = 0;
@@ -26,7 +24,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film filmUpdate(Film film) {
-        userStorage.checkId(film.getId());
         getFilm(film.getId());
         films.put(film.getId(), film);
         return film;
@@ -39,7 +36,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void filmDelete(Long id) {
-        userStorage.checkId(id);
         Film film = getFilm(id);
         films.remove(film.getId());
         log.info("Фильм {} удален", film);

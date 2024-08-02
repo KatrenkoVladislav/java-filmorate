@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exeption.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -31,17 +32,19 @@ public class FilmService {
     }
 
     public Film filmUpdate(Film newFilm) {
+        checkId(newFilm.getId());
         validateFilm(newFilm);
         return filmStorage.filmUpdate(newFilm);
     }
 
     public void filmDelete(Long id) {
+        checkId(id);
         filmStorage.filmDelete(id);
     }
 
     public void filmLike(Long filmId, Long userId) {
-        userStorage.checkId(filmId);
-        userStorage.checkId(userId);
+        checkId(filmId);
+        checkId(userId);
         Film film = filmStorage.getFilm(filmId);
         User user = userStorage.getUser(userId);
         film.getLikes().add(userId);
@@ -49,8 +52,8 @@ public class FilmService {
     }
 
     public void filmLikeRemove(Long filmId, Long userId) {
-        userStorage.checkId(filmId);
-        userStorage.checkId(userId);
+        checkId(filmId);
+        checkId(userId);
         Film film = filmStorage.getFilm(filmId);
         User user = userStorage.getUser(userId);
         film.getLikes().remove(userId);
@@ -82,6 +85,13 @@ public class FilmService {
         if (film.getDuration() <= 0) {
             log.error("Продолжительность отрицательная!");
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
+        }
+    }
+
+    private void checkId(Long id) {
+        if (id == null) {
+            log.info("Параметр id не задан в запросе");
+            throw new ConditionsNotMetException("Параметр id не задан");
         }
     }
 }
