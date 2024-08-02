@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ public class UserControllerTests {
         user.setEmail("");
 
         assertThrows(ValidationException.class, () -> {
-            User user1 = userController.create(user);
+            User user1 = userController.userCreate(user);
         });
     }
 
@@ -43,7 +43,7 @@ public class UserControllerTests {
         user.setEmail("adigey@mail.ru");
 
         assertThrows(ConstraintViolationException.class, () -> {
-            User user1 = userController.create(user);
+            User user1 = userController.userCreate(user);
         });
     }
 
@@ -57,7 +57,7 @@ public class UserControllerTests {
         user.setEmail("adigey@mail.ru");
 
         assertThrows(ValidationException.class, () -> {
-            User user1 = userController.create(user);
+            User user1 = userController.userCreate(user);
         });
     }
 
@@ -68,7 +68,7 @@ public class UserControllerTests {
         user.setBirthday(LocalDate.of(1993, 4, 24));
         user.setLogin("Botan");
         user.setEmail("adigey@mail.ru");
-        User user1 = userController.create(user);
+        User user1 = userController.userCreate(user);
 
         assertEquals("Botan", user1.getName());
     }
@@ -83,7 +83,7 @@ public class UserControllerTests {
         user.setEmail("adigeymail.ru@");
 
         assertThrows(ConstraintViolationException.class, () -> {
-            User user1 = userController.create(user);
+            User user1 = userController.userCreate(user);
         });
     }
 }

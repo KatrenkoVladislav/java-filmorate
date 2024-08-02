@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class FilmControllerTests {
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
         assertThrows(ConditionsNotMetException.class, () -> {
-            Film film1 = filmController.update(film);
+            Film film1 = filmController.filmUpdate(film);
         });
     }
 
@@ -41,7 +41,7 @@ class FilmControllerTests {
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
         assertThrows(ValidationException.class, () -> {
-            Film film1 = filmController.create(film);
+            Film film1 = filmController.filmCreate(film);
         });
     }
 
@@ -57,7 +57,7 @@ class FilmControllerTests {
         film.setDuration(120);
         film.setReleaseDate(LocalDate.now());
         assertThrows(ValidationException.class, () -> {
-            Film film1 = filmController.create(film);
+            Film film1 = filmController.filmCreate(film);
         });
     }
 
@@ -70,7 +70,7 @@ class FilmControllerTests {
         film.setDuration(120);
         film.setReleaseDate(LocalDate.of(1880, 12, 12));
         assertThrows(ValidationException.class, () -> {
-            Film film1 = filmController.create(film);
+            Film film1 = filmController.filmCreate(film);
         });
     }
 
@@ -83,7 +83,7 @@ class FilmControllerTests {
         film.setDuration(-120);
         film.setReleaseDate(LocalDate.now());
         assertThrows(ValidationException.class, () -> {
-            Film film1 = filmController.create(film);
+            Film film1 = filmController.filmCreate(film);
         });
     }
 
